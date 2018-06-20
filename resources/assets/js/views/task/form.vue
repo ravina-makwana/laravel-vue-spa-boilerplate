@@ -53,7 +53,7 @@
                 })
             };
         },
-        components : { datepicker,RangeSlider },
+        components : { datepicker, RangeSlider },
         props: ['id'],
         mounted() {
             if(this.id)

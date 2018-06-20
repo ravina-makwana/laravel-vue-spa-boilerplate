@@ -2,10 +2,10 @@
 	<div>
         <div class="row page-titles">
             <div class="col-md-12 col-8 align-self-center">
-                <h3 class="text-themecolor m-b-0 m-t-0">Task</h3>
+                <h3 class="text-themecolor m-b-0 m-t-0">SubTask</h3>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><router-link to="/home">Home</router-link></li>
-                    <li class="breadcrumb-item active">Task</li>
+                    <li class="breadcrumb-item active">SubTask</li>
                 </ol>
             </div>
         </div>
@@ -14,8 +14,8 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Add new Task</h4>
-                        <task-form @completed="getTasks"></task-form>
+                        <h4 class="card-title">Add new SubTask</h4>
+                        <SubTaskForm  @completed="getTasks"></SubTaskForm>
                     </div>
                 </div>
             </div>
@@ -25,7 +25,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Filter Task</h4>
+                        <h4 class="card-title">Filter SubTask</h4>
 
                         <div class="row m-t-40">
                             <div class="col-md-3">
@@ -66,7 +66,7 @@
                             </div>
                         </div>
 
-                        <h4 class="card-title">Task List</h4>
+                        <h4 class="card-title">SubTask List</h4>
                         <h6 class="card-subtitle" v-if="tasks.total">Total {{tasks.total}} result found!</h6>
                         <h6 class="card-subtitle" v-else>No result found!</h6>
                         <div class="table-responsive">
@@ -128,19 +128,19 @@
             </div>
         </div>
     </div>
-
+	
 </template>
 
 <script>
-    import TaskForm from './form'
+    import SubTaskForm from './form'
     import pagination from 'laravel-vue-pagination'
     import helper from '../../services/helper'
     import ClickConfirm from 'click-confirm'
 
-    export default {
-    
-        components : { TaskForm, pagination, ClickConfirm },
-        data() {
+	export default {
+		name: 'sub-taks-index',
+        components: { SubTaskForm, pagination, ClickConfirm },
+        data(){
             return {
                 tasks: {},
                 filterTaskForm: {
@@ -156,15 +156,16 @@
         created() {
             this.getTasks();
         },
-
+        
         methods: {
-            getTasks(page) {
-                if (typeof page === 'undefined') {
+            getTasks(page){
+                if(typeof page == 'undefined'){
                     page = 1;
                 }
                 let url = helper.getFilterURL(this.filterTaskForm);
                 axios.get('/api/v1/task?page=' + page + url)
                     .then(response => this.tasks = response.data );
+
             },
             getProgress(task){
                 return 'width: '+task.progress+'%;';
@@ -173,30 +174,29 @@
                 return helper.taskColor(task.progress);
             },
             deleteTask(task){
-                axios.delete('/api/v1/task/'+task.id).then(response => {
-                    toastr['success'](response.data.message);
-                    this.getTasks();
-                }).catch(error => {
-                    toastr['error'](error.response.data.message);
-                });
+                axios.delete('/api/v1/task/'+ task.id )
+                    .then(response => {
+                        toastr['success'](response.data.message);
+                        this.getTasks();
+                    });
             },
             editTask(task){
-                this.$router.push('/task/'+task.uuid+'/edit');
+                this.$router.push({'name': 'subtask.edit', params:{id: task.uuid }});
             },
             getTaskStatus(task){
                 return (task.status) ? '<span class="label label-success">Completed</span>' : '<span class="label label-danger">Pending</span>';
             },
             toggleTaskStatus(task){
-                axios.post('/api/v1/task/status',{id:task.id}).then((response) => {
+                axios.post('/api/v1/task/status',{id: task.id}).then((response) => {
                     toastr['success'](response.data.message);
                     this.getTasks();
-                });
+                })
             }
         },
         filters: {
-          moment(date) {
-            return helper.formatDate(date);
-          }
+            moment(date) {
+                return helper.formatDate(date);
+            }
         }
-    }
+	}
 </script>

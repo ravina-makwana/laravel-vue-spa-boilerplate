@@ -46,6 +46,16 @@ let routes = [
             {
                 path: '/user/:id/edit',
                 component: require('./views/user/edit')
+            },
+            {
+                path: '/sub-task',
+                name: 'subtask.index',
+                component: require('./views/subtask/index')
+            },
+            {
+                path: '/sub-task/:id/edit',
+                name: 'subtask.edit',
+                component: require('./views/subtask/edit')
             }
         ]
     },
